@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Module SM: Ship Management & Tracking
+model Vessel {
+  id          String   @id @default(cuid())
+  name        String
+  imoNumber   String?
+  type        String   // e.g., "Tanker", "Cargo", "Passenger"
+  status      String   // "Underway", "At Anchor", "Under Repair"
+  latitude    Float
+  longitude   Float
+  lastUpdated DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  certificates Certificate[]
+}
+
+// Module PMT: Certificate Data Management
+model Certificate {
+  id                String    @id @default(cuid())
+  certificateNumber String
+  vesselId          String
+  vessel            Vessel    @relation(fields: [vesselId], references: [id], onDelete: Cascade)
+  type              String    // e.g., "IOPP", "Safety Management Certificate"
+  issuingAuthority  String    // e.g., "BKI", "ABS", "LR"
+  issueDate         DateTime
+  expiryDate        DateTime
+  version           Int       @default(1)
+  isCopy            Boolean   @default(false) // True if this is a copied version
+  copyFromId        String?   // Original certificate ID if this is a copy
+  notes             String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+// Module UWC: Equipment Inventory In-Out
+model Equipment {
+  id          String            @id @default(cuid())
+  name        String
+  type        String            // e.g., "ROV", "Diving Helmet", "Sonar"
+  status      String            // "Available", "In Use", "Maintenance", "Broken"
+  location    String            // "Warehouse" or vessel name if deployed
+  serialNumber String?
+  purchaseDate DateTime?
+  lastMaintenance DateTime?
+  histories   EquipmentHistory[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model EquipmentHistory {
+  id          String   @id @default(cuid())
+  equipmentId String
+  equipment   Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  action      String   // "Check Out" or "Check In"
+  assignee    String?
+  project     String?
+  vessel      String?  // Target vessel when deployed
+  location    String   // "Warehouse" or vessel name
+  notes       String?
+  createdAt   DateTime @default(now())
+}
