@@ -25,6 +25,7 @@ export interface Certificate {
   isCopy: boolean;
   copyFromId?: string;
   notes?: string;
+  attachmentUrl?: string;
   createdAt: Date;
   updatedAt: Date;
 }

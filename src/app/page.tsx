@@ -3,21 +3,28 @@
 import { ShipManagement } from '@/components/modules/ship-management';
 import { CertificateManagement } from '@/components/modules/certificate-management';
 import { EquipmentInventory } from '@/components/modules/equipment-inventory';
-import { useMaritimeStore } from '@/store/maritime-store';
+import { DashboardSummary } from '@/components/modules/dashboard-summary';
+import { useMaritimeStore, UserRole } from '@/store/maritime-store';
 import { useToast } from '@/hooks/use-toast';
 import { Toaster } from '@/components/ui/toaster';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Badge } from '@/components/ui/badge';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import {
   Ship,
   Vault,
   Package,
   Menu,
-  X,
   Anchor,
   Building,
-  Users,
+  LayoutDashboard,
+  Bell,
+  UserCircle,
+  Check
 } from 'lucide-react';
+import Image from 'next/image';
 
 // Sidebar component
 function SidebarContent() {
@@ -28,11 +35,11 @@ function SidebarContent() {
     <div className="flex flex-col h-full">
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#002147] rounded-lg flex items-center justify-center">
-            <Anchor className="h-6 w-6 text-white" />
+          <div className="w-10 h-10 flex items-center justify-center">
+            <Image src="/logo.svg" alt="PT. Pacific Marine Technology]" width={40} height={40} />
           </div>
           <div>
-            <h1 className="font-bold text-lg text-[#002147]">Pacific Marine</h1>
+            <h1 className="font-bold text-lg text-[#002147]">PT. Pacific Mariney</h1>
             <p className="text-xs text-gray-600">Technology</p>
           </div>
         </div>
@@ -44,12 +51,22 @@ function SidebarContent() {
         </p>
 
         <button
+          onClick={() => setActiveModule('dashboard')}
+          className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all ${activeModule === 'dashboard'
+            ? 'bg-[#002147] text-white shadow-md'
+            : 'text-gray-700 hover:bg-gray-100'
+            }`}
+        >
+          <LayoutDashboard className="h-5 w-5" />
+          <span className="font-medium">Dashboard Summary</span>
+        </button>
+
+        <button
           onClick={() => setActiveModule('sm')}
-          className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all ${
-            activeModule === 'sm'
-              ? 'bg-[#002147] text-white shadow-md'
-              : 'text-gray-700 hover:bg-gray-100'
-          }`}
+          className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all ${activeModule === 'sm'
+            ? 'bg-[#002147] text-white shadow-md'
+            : 'text-gray-700 hover:bg-gray-100'
+            }`}
         >
           <Ship className="h-5 w-5" />
           <span className="font-medium">Ship Management</span>
@@ -57,11 +74,10 @@ function SidebarContent() {
 
         <button
           onClick={() => setActiveModule('pmt')}
-          className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all ${
-            activeModule === 'pmt'
-              ? 'bg-[#002147] text-white shadow-md'
-              : 'text-gray-700 hover:bg-gray-100'
-          }`}
+          className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all ${activeModule === 'pmt'
+            ? 'bg-[#002147] text-white shadow-md'
+            : 'text-gray-700 hover:bg-gray-100'
+            }`}
         >
           <Vault className="h-5 w-5" />
           <span className="font-medium">Certificate Data</span>
@@ -69,11 +85,10 @@ function SidebarContent() {
 
         <button
           onClick={() => setActiveModule('uwc')}
-          className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all ${
-            activeModule === 'uwc'
-              ? 'bg-[#002147] text-white shadow-md'
-              : 'text-gray-700 hover:bg-gray-100'
-          }`}
+          className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all ${activeModule === 'uwc'
+            ? 'bg-[#002147] text-white shadow-md'
+            : 'text-gray-700 hover:bg-gray-100'
+            }`}
         >
           <Package className="h-5 w-5" />
           <span className="font-medium">Equipment Inventory</span>
@@ -84,7 +99,7 @@ function SidebarContent() {
         <div className="bg-gradient-to-br from-[#002147] to-[#00152e] rounded-lg p-4 text-white">
           <div className="flex items-center gap-2 mb-2">
             <Building className="h-5 w-5" />
-            <span className="font-semibold text-sm">PT. Pacific Marine</span>
+            <span className="font-semibold text-sm">PT Padepokan Tujuh Sembilan</span>
           </div>
           <p className="text-xs opacity-90 leading-relaxed">
             Professional maritime technology solutions for vessel management and operations.
@@ -97,249 +112,58 @@ function SidebarContent() {
 
 export default function MaritimeManagement() {
   const activeModule = useMaritimeStore((state) => state.activeModule);
-  const setActiveModule = useMaritimeStore((state) => state.setActiveModule);
+  const userRole = useMaritimeStore((state) => state.userRole);
+  const setUserRole = useMaritimeStore((state) => state.setUserRole);
+  const notifications = useMaritimeStore((state) => state.notifications);
+  const markNotificationAsRead = useMaritimeStore((state) => state.markNotificationAsRead);
+  const clearNotifications = useMaritimeStore((state) => state.clearNotifications);
 
-  // Dummy data for vessels
-  const vessels = [
-    {
-      id: 'v1',
-      name: 'MV Pacific Voyager',
-      imoNumber: 'IMO9234567',
-      type: 'Cargo Vessel',
-      status: 'Underway' as const,
-      latitude: -6.2088,
-      longitude: 106.8456,
-      lastUpdated: new Date(),
-      createdAt: new Date('2020-01-01'),
-      updatedAt: new Date(),
-    },
-    {
-      id: 'v2',
-      name: 'MT Nusantara Gas',
-      imoNumber: 'IMO9876543',
-      type: 'Tanker',
-      status: 'At Anchor' as const,
-      latitude: -5.5521,
-      longitude: 105.2771,
-      lastUpdated: new Date(),
-      createdAt: new Date('2021-01-01'),
-      updatedAt: new Date(),
-    },
-    {
-      id: 'v3',
-      name: 'MV Maritime Explorer',
-      imoNumber: 'IMO9123456',
-      type: 'Research Vessel',
-      status: 'Under Repair' as const,
-      latitude: -1.2654,
-      longitude: 116.8312,
-      lastUpdated: new Date(),
-      createdAt: new Date('2019-01-01'),
-      updatedAt: new Date(),
-    },
-  ];
+  const vessels = useMaritimeStore((state) => state.vessels);
+  const certificates = useMaritimeStore((state) => state.certificates);
+  const equipment = useMaritimeStore((state) => state.equipment);
 
-  // Dummy data for certificates
-  const certificates = [
-    {
-      id: 'c1',
-      certificateNumber: 'IOPP-2024-001',
-      vesselId: 'v1',
-      type: 'IOPP Certificate',
-      issuingAuthority: 'BKI',
-      issueDate: new Date('2023-01-15'),
-      expiryDate: new Date('2025-01-15'),
-      version: 1,
-      isCopy: false,
-      notes: 'International Oil Pollution Prevention Certificate',
-      createdAt: new Date('2023-01-15'),
-      updatedAt: new Date(),
-    },
-    {
-      id: 'c2',
-      certificateNumber: 'SMC-2024-002',
-      vesselId: 'v1',
-      type: 'Safety Management Certificate',
-      issuingAuthority: 'ABS',
-      issueDate: new Date('2023-06-01'),
-      expiryDate: new Date('2024-12-15'),
-      version: 1,
-      isCopy: false,
-      notes: 'Compliance with ISM Code',
-      createdAt: new Date('2023-06-01'),
-      updatedAt: new Date(),
-    },
-    {
-      id: 'c3',
-      certificateNumber: 'DOC-2024-003',
-      vesselId: 'v2',
-      type: 'Document of Compliance',
-      issuingAuthority: 'LR',
-      issueDate: new Date('2023-03-01'),
-      expiryDate: new Date('2025-03-01'),
-      version: 1,
-      isCopy: false,
-      notes: 'Company DOC Certificate',
-      createdAt: new Date('2023-03-01'),
-      updatedAt: new Date(),
-    },
-    {
-      id: 'c4',
-      certificateNumber: 'CSC-2024-004',
-      vesselId: 'v2',
-      type: 'Cargo Ship Safety Certificate',
-      issuingAuthority: 'BKI',
-      issueDate: new Date('2024-01-01'),
-      expiryDate: new Date('2024-06-30'),
-      version: 1,
-      isCopy: false,
-      notes: 'Expires in 90 days - needs attention',
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date(),
-    },
-  ];
-
-  // Dummy data for equipment
-  const equipment = [
-    {
-      id: 'e1',
-      name: 'ROV-001',
-      type: 'Remote Operated Vehicle',
-      status: 'Available' as const,
-      location: 'Warehouse',
-      serialNumber: 'ROV-2024-001',
-      purchaseDate: new Date('2023-01-01'),
-      lastMaintenance: new Date('2024-01-15'),
-      histories: [],
-      createdAt: new Date('2023-01-01'),
-      updatedAt: new Date(),
-    },
-    {
-      id: 'e2',
-      name: 'ROV-002',
-      type: 'Remote Operated Vehicle',
-      status: 'In Use' as const,
-      location: 'MV Pacific Voyager',
-      serialNumber: 'ROV-2024-002',
-      purchaseDate: new Date('2023-02-01'),
-      lastMaintenance: new Date('2024-02-15'),
-      histories: [
-        {
-          id: 'hist-001',
-          equipmentId: 'e2',
-          action: 'Check Out' as const,
-          assignee: 'Captain John Doe',
-          project: 'Pipeline Inspection 2024',
-          vessel: 'MV Pacific Voyager',
-          location: 'MV Pacific Voyager',
-          notes: 'Deployed for pipeline inspection',
-          createdAt: new Date('2024-03-01'),
-        },
-      ],
-      createdAt: new Date('2023-02-01'),
-      updatedAt: new Date(),
-    },
-    {
-      id: 'e3',
-      name: 'Diving Helmet-001',
-      type: 'Professional Diving Helmet',
-      status: 'Available' as const,
-      location: 'Warehouse',
-      serialNumber: 'DH-2024-001',
-      purchaseDate: new Date('2023-03-01'),
-      lastMaintenance: new Date('2024-03-15'),
-      histories: [],
-      createdAt: new Date('2023-03-01'),
-      updatedAt: new Date(),
-    },
-    {
-      id: 'e4',
-      name: 'Sonar System-001',
-      type: 'Side Scan Sonar',
-      status: 'Maintenance' as const,
-      location: 'Warehouse',
-      serialNumber: 'SON-2024-001',
-      purchaseDate: new Date('2023-04-01'),
-      lastMaintenance: new Date('2024-04-01'),
-      histories: [],
-      createdAt: new Date('2023-04-01'),
-      updatedAt: new Date(),
-    },
-    {
-      id: 'e5',
-      name: 'ROV-003',
-      type: 'Remote Operated Vehicle',
-      status: 'Broken' as const,
-      location: 'Warehouse',
-      serialNumber: 'ROV-2024-003',
-      purchaseDate: new Date('2023-05-01'),
-      lastMaintenance: new Date('2024-05-01'),
-      histories: [],
-      createdAt: new Date('2023-05-01'),
-      updatedAt: new Date(),
-    },
-    {
-      id: 'e6',
-      name: 'Diving Helmet-002',
-      type: 'Professional Diving Helmet',
-      status: 'In Use' as const,
-      location: 'MT Nusantara Gas',
-      serialNumber: 'DH-2024-002',
-      purchaseDate: new Date('2023-06-01'),
-      lastMaintenance: new Date('2024-06-01'),
-      histories: [
-        {
-          id: 'hist-002',
-          equipmentId: 'e6',
-          action: 'Check Out' as const,
-          assignee: 'Officer Jane Smith',
-          project: 'Underwater Survey 2024',
-          vessel: 'MT Nusantara Gas',
-          location: 'MT Nusantara Gas',
-          notes: 'Assigned for underwater survey',
-          createdAt: new Date('2024-06-01'),
-        },
-      ],
-      createdAt: new Date('2023-06-01'),
-      updatedAt: new Date(),
-    },
-  ];
+  const certificatesWithVessels = certificates.map((cert) => ({
+    ...cert,
+    vessel: vessels.find((v) => v.id === cert.vesselId) as any,
+  }));
 
   const renderModule = () => {
     switch (activeModule) {
+      case 'dashboard':
+        return <DashboardSummary vessels={vessels} certificates={certificatesWithVessels} equipment={equipment} />;
       case 'sm':
         return <ShipManagement vessels={vessels} certificates={certificates} />;
       case 'pmt':
-        return <CertificateManagement certificates={certificates} vessels={vessels} />;
+        return <CertificateManagement certificates={certificatesWithVessels} vessels={vessels} />;
       case 'uwc':
         return <EquipmentInventory equipment={equipment} />;
       default:
-        return <ShipManagement vessels={vessels} certificates={certificates} />;
+        return <DashboardSummary vessels={vessels} certificates={certificatesWithVessels} equipment={equipment} />;
     }
   };
+
+  const unreadCount = notifications.filter(n => !n.isRead).length;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Mobile Header */}
-      <div className="lg:hidden sticky top-0 z-50 bg-white border-b border-gray-200 px-4 py-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#002147] rounded-lg flex items-center justify-center">
-              <Anchor className="h-5 w-5 text-white" />
-            </div>
-            <span className="font-bold text-[#002147]">Pacific Marine</span>
+      <div className="lg:hidden sticky top-0 z-50 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 flex items-center justify-center">
+            <Image src="/logo.svg" alt="Logo" width={32} height={32} />
           </div>
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu className="h-6 w-6" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-72 p-0">
-              <SidebarContent />
-            </SheetContent>
-          </Sheet>
+          <span className="font-bold text-[#002147]">PT Padepokan</span>
         </div>
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Menu className="h-6 w-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-72 p-0">
+            <SidebarContent />
+          </SheetContent>
+        </Sheet>
       </div>
 
       <div className="flex-1 flex">
@@ -349,26 +173,80 @@ export default function MaritimeManagement() {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 lg:ml-72">
-          <div className="p-6 lg:p-8">{renderModule()}</div>
+        <main className="flex-1 lg:ml-72 flex flex-col h-screen">
+          {/* Top Navbar */}
+          <header className="bg-white border-b border-gray-200 h-16 px-6 flex items-center justify-between sticky top-0 z-40">
+            <div className="font-semibold text-gray-700">
+              {activeModule === 'dashboard' && 'Dashboard Summary'}
+              {activeModule === 'sm' && 'Ship Management'}
+              {activeModule === 'pmt' && 'Certificate Data'}
+              {activeModule === 'uwc' && 'Equipment Inventory'}
+            </div>
+
+            <div className="flex items-center gap-4">
+              {/* Notifications */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="icon" className="relative">
+                    <Bell className="h-5 w-5 text-gray-600" />
+                    {unreadCount > 0 && (
+                      <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-80">
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="font-semibold">Notifications</h3>
+                    <Button variant="ghost" size="sm" onClick={clearNotifications} className="h-auto p-1 text-xs">Clear All</Button>
+                  </div>
+                  <div className="space-y-2 max-h-60 overflow-y-auto">
+                    {notifications.length > 0 ? notifications.map(notif => (
+                      <div key={notif.id} className={`p-3 rounded border text-sm ${notif.isRead ? 'bg-gray-50 opacity-70' : 'bg-white'}`}>
+                        <div className="flex justify-between">
+                          <strong className={notif.type === 'warning' ? 'text-orange-600' : notif.type === 'error' ? 'text-red-600' : 'text-blue-600'}>
+                            {notif.title}
+                          </strong>
+                          {!notif.isRead && <span onClick={() => markNotificationAsRead(notif.id)} className="cursor-pointer text-xs text-blue-500 hover:underline">Mark read</span>}
+                        </div>
+                        <p className="text-gray-600 mt-1">{notif.message}</p>
+                      </div>
+                    )) : (
+                      <p className="text-sm text-gray-500 text-center py-4">No notifications</p>
+                    )}
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              {/* User Role Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="gap-2">
+                    <UserCircle className="h-4 w-4" />
+                    <span className="hidden sm:inline-block">{userRole}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Change Role</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {['Admin', 'Manager', 'Staff', 'Warehouse', 'Viewer'].map((role) => (
+                    <DropdownMenuItem key={role} onClick={() => setUserRole(role as UserRole)} className="justify-between">
+                      {role}
+                      {userRole === role && <Check className="h-4 w-4 ml-2" />}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </header>
+
+          {/* Module Content */}
+          <div className="p-6 lg:p-8 flex-1 overflow-y-auto bg-gray-50">
+            {renderModule()}
+          </div>
         </main>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-[#002147] text-white mt-auto">
-        <div className="px-6 py-4">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <Anchor className="h-5 w-5" />
-              <span className="font-semibold">PT. Pacific Marine Technology</span>
-            </div>
-            <p className="text-sm opacity-90 text-center sm:text-right">
-              © 2024 Pacific Marine Technology. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
-
+      {/* Toaster placed centrally */}
       <Toaster />
     </div>
   );
