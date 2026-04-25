@@ -15,22 +15,22 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "PT. Pacific Marine Technology] - Internal Dashboard",
-  description: "Dashboard management system for PT Padepokan Tujuh Sembilan. Built with modern web technologies.",
-  keywords: ["Padepokan Tujuh Sembilan", "Next.js", "Dashboard", "Management", "React"],
-  authors: [{ name: "Padepokan Tujuh Sembilan Team" }],
+  description: "Dashboard management system for PT Pacific Mariney. Built with modern web technologies.",
+  keywords: ["Pacific Mariney", "Next.js", "Dashboard", "Management", "React"],
+  authors: [{ name: "Pacific Mariney Team" }],
   icons: {
     icon: "/logo.svg",
   },
   openGraph: {
     title: "AirShip Management",
     description: "Internal dashboard and management system",
-    url: "https://padepokantujuhsembilan.com",
-    siteName: "PT Padepokan Tujuh Sembilan",
+    url: "https://pacificmariney.com",
+    siteName: "PT Pacific Mariney",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "PT Padepokan Tujuh Sembilan",
+    title: "PT Pacific Mariney",
     description: "Internal dashboard and management system",
   },
 };

@@ -99,7 +99,7 @@ function SidebarContent() {
         <div className="bg-gradient-to-br from-[#002147] to-[#00152e] rounded-lg p-4 text-white">
           <div className="flex items-center gap-2 mb-2">
             <Building className="h-5 w-5" />
-            <span className="font-semibold text-sm">PT Padepokan Tujuh Sembilan</span>
+            <span className="font-semibold text-sm">PT Pacific Mariney</span>
           </div>
           <p className="text-xs opacity-90 leading-relaxed">
             Professional maritime technology solutions for vessel management and operations.
@@ -152,7 +152,7 @@ export default function MaritimeManagement() {
           <div className="w-8 h-8 flex items-center justify-center">
             <Image src="/logo.svg" alt="Logo" width={32} height={32} />
           </div>
-          <span className="font-bold text-[#002147]">PT Padepokan</span>
+          <span className="font-bold text-[#002147]">PT Pacific Mariney</span>
         </div>
         <Sheet>
           <SheetTrigger asChild>
