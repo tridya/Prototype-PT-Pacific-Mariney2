@@ -297,8 +297,10 @@ export function CertificateManagement({
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-[calc(100vh-24rem)]">
-            <Table>
-              <TableHeader>
+            {/* Desktop Table View */}
+            <div className="hidden lg:block">
+              <Table>
+                <TableHeader>
                 <TableRow>
                   <TableHead>Certificate Number</TableHead>
                   <TableHead>Type</TableHead>
@@ -345,7 +347,7 @@ export function CertificateManagement({
                       </TableCell>
                       <TableCell className="text-right">
                         {/* Desktop Actions */}
-                        <div className="hidden sm:flex items-center justify-end gap-2">
+                        <div className="flex items-center justify-end gap-2">
                           <Button variant="outline" size="sm" onClick={() => handleDownloadCert(cert)} title="Download Attachment">
                             <Download className="h-4 w-4" />
                           </Button>
@@ -366,41 +368,6 @@ export function CertificateManagement({
                             </>
                           )}
                         </div>
-
-                        {/* Mobile Actions (Three Dots Dropdown) */}
-                        <div className="flex sm:hidden justify-end">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem onClick={() => handleDownloadCert(cert)}>
-                                <Download className="h-4 w-4 mr-2" /> Download
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handlePreview(cert)}>
-                                <Eye className="h-4 w-4 mr-2" /> Preview
-                              </DropdownMenuItem>
-                              {!isReadOnly && (
-                                <>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem onClick={() => handleOpenModal(cert)}>
-                                    <Edit className="h-4 w-4 mr-2" /> Edit
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleCopy(cert)}>
-                                    <Copy className="h-4 w-4 mr-2" /> Copy
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleDelete(cert)} className="text-red-600 focus:text-red-600 focus:bg-red-50">
-                                    <Trash2 className="h-4 w-4 mr-2" /> Delete
-                                  </DropdownMenuItem>
-                                </>
-                              )}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
                       </TableCell>
                     </TableRow>
                   );
@@ -414,6 +381,89 @@ export function CertificateManagement({
                 )}
               </TableBody>
             </Table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="grid grid-cols-1 gap-4 lg:hidden pb-4 pt-2">
+              {filteredCertificates.map((cert) => {
+                const health = calculateCertificateHealth(new Date(cert.expiryDate));
+                return (
+                  <Card key={cert.id} className={cert.isCopy ? 'bg-gray-50 border-dashed' : ''}>
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <div className="font-bold text-base flex items-center gap-2">
+                            {cert.certificateNumber}
+                            {cert.isCopy && <Badge variant="outline" className="text-xs">Copy</Badge>}
+                          </div>
+                          <div className="text-sm font-medium text-gray-700">{cert.type}</div>
+                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <span className="sr-only">Open menu</span>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => handleDownloadCert(cert)}>
+                              <Download className="h-4 w-4 mr-2" /> Download
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handlePreview(cert)}>
+                              <Eye className="h-4 w-4 mr-2" /> Preview
+                            </DropdownMenuItem>
+                            {!isReadOnly && (
+                              <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => handleOpenModal(cert)}>
+                                  <Edit className="h-4 w-4 mr-2" /> Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleCopy(cert)}>
+                                  <Copy className="h-4 w-4 mr-2" /> Copy
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleDelete(cert)} className="text-red-600 focus:text-red-600 focus:bg-red-50">
+                                  <Trash2 className="h-4 w-4 mr-2" /> Delete
+                                </DropdownMenuItem>
+                              </>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <span className="text-gray-500 block text-xs">Vessel</span>
+                            <span className="font-medium">{cert.vessel?.name || 'Unknown'}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500 block text-xs">Authority</span>
+                            <span className="font-medium">{cert.issuingAuthority}</span>
+                          </div>
+                        </div>
+                        <div className="flex justify-between items-center pt-3 border-t mt-3">
+                          <div className="flex flex-col">
+                            <span className="text-gray-500 text-xs">Expiry Date</span>
+                            <div className="flex items-center gap-1 font-medium">
+                              <Calendar className="h-3 w-3" />
+                              {new Date(cert.expiryDate).toLocaleDateString()}
+                            </div>
+                          </div>
+                          <Badge className={getHealthBadgeColorClass(health.health)}>
+                            {health.daysRemaining > 0 ? `${health.daysRemaining} days` : 'Expired'}
+                          </Badge>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+              {filteredCertificates.length === 0 && (
+                <div className="text-center py-8 text-gray-500 border rounded-lg border-dashed">
+                  No certificates found. Add your first certificate to get started.
+                </div>
+              )}
+            </div>
           </ScrollArea>
         </CardContent>
       </Card>
