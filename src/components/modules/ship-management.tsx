@@ -125,24 +125,24 @@ export function ShipManagement({ vessels, certificates }: ShipManagementProps) {
 
   return (
     <div className="flex flex-col gap-6 h-full">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold flex items-center gap-2">
-            <Ship className="h-8 w-8" />
+          <h2 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
+            <Ship className="h-6 w-6 sm:h-8 sm:w-8" />
             Ship Management
           </h2>
-          <p className="text-gray-600 mt-1">Fleet tracking and management</p>
+          <p className="text-gray-600 mt-1 text-sm sm:text-base">Fleet tracking and management</p>
         </div>
         {!isReadOnly && (
-          <Button onClick={() => handleOpenModal()} className="bg-[#002147] hover:bg-[#00152e]" size="lg">
+          <Button onClick={() => handleOpenModal()} className="bg-[#002147] hover:bg-[#00152e] w-full sm:w-auto" size="lg">
             <Plus className="h-5 w-5 mr-2" /> Add Vessel
           </Button>
         )}
       </div>
 
-      <div className="flex gap-6 h-full">
+      <div className="flex flex-col lg:flex-row gap-6 h-full">
         {/* Vessel List */}
-        <div className="w-1/2">
+        <div className="w-full lg:w-1/2">
           <Card className="h-full flex flex-col">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -157,11 +157,10 @@ export function ShipManagement({ vessels, certificates }: ShipManagementProps) {
                   {vessels.map((vessel) => (
                     <div key={vessel.id}>
                       <div
-                        className={`p-4 rounded-lg border-2 transition-all cursor-pointer ${
-                          selectedVessel?.id === vessel.id
+                        className={`p-4 rounded-lg border-2 transition-all cursor-pointer ${selectedVessel?.id === vessel.id
                             ? 'border-blue-600 bg-blue-50'
                             : 'border-gray-200 hover:border-gray-300'
-                        }`}
+                          }`}
                         onClick={() => setSelectedVessel(vessel)}
                       >
                         <div className="flex items-start justify-between mb-3">
@@ -177,14 +176,14 @@ export function ShipManagement({ vessels, certificates }: ShipManagementProps) {
                               </div>
                             </Badge>
                             {!isReadOnly && (
-                                <div className="flex gap-1" onClick={e => e.stopPropagation()}>
-                                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleOpenModal(vessel)}>
-                                    <Edit className="h-3 w-3" />
-                                  </Button>
-                                  <Button variant="ghost" size="icon" className="h-6 w-6 text-red-500" onClick={() => handleDelete(vessel.id)}>
-                                    <Trash2 className="h-3 w-3" />
-                                  </Button>
-                                </div>
+                              <div className="flex gap-1" onClick={e => e.stopPropagation()}>
+                                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleOpenModal(vessel)}>
+                                  <Edit className="h-3 w-3" />
+                                </Button>
+                                <Button variant="ghost" size="icon" className="h-6 w-6 text-red-500" onClick={() => handleDelete(vessel.id)}>
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </div>
                             )}
                           </div>
                         </div>
@@ -212,7 +211,7 @@ export function ShipManagement({ vessels, certificates }: ShipManagementProps) {
         </div>
 
         {/* Vessel Details & Map */}
-        <div className="w-1/2 flex flex-col gap-6">
+        <div className="w-full lg:w-1/2 flex flex-col gap-6">
           {/* Map Placeholder */}
           <Card>
             <CardHeader>
@@ -301,33 +300,33 @@ export function ShipManagement({ vessels, certificates }: ShipManagementProps) {
             <DialogTitle>{editingVessel ? 'Edit Vessel' : 'Add Vessel'}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Name *</Label>
-              <Input className="col-span-3" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-start sm:items-center gap-2 sm:gap-4">
+              <Label className="text-left sm:text-right">Name *</Label>
+              <Input className="col-span-1 sm:col-span-3" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">IMO</Label>
-              <Input className="col-span-3" value={formData.imoNumber} onChange={e => setFormData({...formData, imoNumber: e.target.value})} />
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-start sm:items-center gap-2 sm:gap-4">
+              <Label className="text-left sm:text-right">IMO</Label>
+              <Input className="col-span-1 sm:col-span-3" value={formData.imoNumber} onChange={e => setFormData({ ...formData, imoNumber: e.target.value })} />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Type *</Label>
-              <Input className="col-span-3" value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} />
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-start sm:items-center gap-2 sm:gap-4">
+              <Label className="text-left sm:text-right">Type *</Label>
+              <Input className="col-span-1 sm:col-span-3" value={formData.type} onChange={e => setFormData({ ...formData, type: e.target.value })} />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Status</Label>
-              <select className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value as VesselStatus})}>
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-start sm:items-center gap-2 sm:gap-4">
+              <Label className="text-left sm:text-right">Status</Label>
+              <select className="col-span-1 sm:col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3" value={formData.status} onChange={e => setFormData({ ...formData, status: e.target.value as VesselStatus })}>
                 <option value="Underway">Underway</option>
                 <option value="At Anchor">At Anchor</option>
                 <option value="Under Repair">Under Repair</option>
               </select>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Lat</Label>
-              <Input className="col-span-3" type="number" step="0.0001" value={formData.latitude} onChange={e => setFormData({...formData, latitude: Number(e.target.value)})} />
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-start sm:items-center gap-2 sm:gap-4">
+              <Label className="text-left sm:text-right">Lat</Label>
+              <Input className="col-span-1 sm:col-span-3" type="number" step="0.0001" value={formData.latitude} onChange={e => setFormData({ ...formData, latitude: Number(e.target.value) })} />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Lon</Label>
-              <Input className="col-span-3" type="number" step="0.0001" value={formData.longitude} onChange={e => setFormData({...formData, longitude: Number(e.target.value)})} />
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-start sm:items-center gap-2 sm:gap-4">
+              <Label className="text-left sm:text-right">Lon</Label>
+              <Input className="col-span-1 sm:col-span-3" type="number" step="0.0001" value={formData.longitude} onChange={e => setFormData({ ...formData, longitude: Number(e.target.value) })} />
             </div>
           </div>
           <DialogFooter>
