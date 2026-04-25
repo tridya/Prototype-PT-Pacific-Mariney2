@@ -237,15 +237,15 @@ export function CertificateManagement({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold flex items-center gap-2">
-            <Vault className="h-8 w-8" />
+          <h2 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
+            <Vault className="h-6 w-6 sm:h-8 sm:w-8" />
             Digital Vault
           </h2>
-          <p className="text-gray-600 mt-1">Certificate Data Management</p>
+          <p className="text-gray-600 mt-1 text-sm sm:text-base">Certificate Data Management</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full sm:w-auto">
           <Button onClick={handleExport} variant="outline" className="hidden sm:flex">
             <Download className="h-4 w-4 mr-2" />
             Export
@@ -253,7 +253,7 @@ export function CertificateManagement({
           {!isReadOnly && (
             <Button
               onClick={() => handleOpenModal()}
-              className="bg-[#002147] hover:bg-[#00152e]"
+              className="bg-[#002147] hover:bg-[#00152e] w-full sm:w-auto"
               size="lg"
             >
               <Plus className="h-5 w-5 mr-2" />
@@ -335,34 +335,33 @@ export function CertificateManagement({
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button variant="outline" size="sm" onClick={() => handleDownloadCert(cert)} title="Download Attachment">
+                        <div className="flex flex-wrap items-center justify-end gap-1 sm:gap-2">
+                          <Button variant="outline" size="icon" className="h-8 w-8 sm:w-auto sm:h-9 sm:px-3" onClick={() => handleDownloadCert(cert)} title="Download Attachment">
                             <Download className="h-4 w-4" />
                           </Button>
-                          <Button variant="outline" size="sm" onClick={() => handlePreview(cert)} title="Preview Document">
+                          <Button variant="outline" size="icon" className="h-8 w-8 sm:w-auto sm:h-9 sm:px-3" onClick={() => handlePreview(cert)} title="Preview Document">
                             <Eye className="h-4 w-4" />
                           </Button>
                           {!isReadOnly && (
                             <>
                               <Button
                                 variant="outline"
-                                size="sm"
+                                size="icon" className="h-8 w-8 sm:w-auto sm:h-9 sm:px-3"
                                 onClick={() => handleOpenModal(cert)}
                               >
                                 <Edit className="h-4 w-4" />
                               </Button>
                               <Button
                                 variant="outline"
-                                size="sm"
+                                size="icon" className="h-8 w-8 sm:w-auto sm:h-9 sm:px-3"
                                 onClick={() => handleCopy(cert)}
                               >
                                 <Copy className="h-4 w-4" />
                               </Button>
                               <Button
                                 variant="outline"
-                                size="sm"
+                                size="icon" className="h-8 w-8 sm:w-auto sm:h-9 sm:px-3 text-red-500 hover:text-red-700 hover:bg-red-50"
                                 onClick={() => handleDelete(cert)}
-                                className="text-red-500 hover:text-red-700 hover:bg-red-50"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -401,7 +400,7 @@ export function CertificateManagement({
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="certificateNumber">Certificate Number *</Label>
                 <Input
@@ -441,7 +440,7 @@ export function CertificateManagement({
               </select>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="issuingAuthority">Issuing Authority *</Label>
                 <Input

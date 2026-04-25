@@ -198,7 +198,7 @@ export function EquipmentInventory({ equipment }: EquipmentInventoryProps) {
       {items.length > 0 ? items.map((item) => (
         <Card key={item.id} className="transition-all hover:shadow-md">
           <CardContent className="p-6">
-            <div className="flex items-start justify-between mb-4">
+            <div className="flex flex-col sm:flex-row items-start sm:justify-between gap-4 mb-4">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
                   <Package className="h-5 w-5 text-gray-600" />
@@ -210,7 +210,7 @@ export function EquipmentInventory({ equipment }: EquipmentInventoryProps) {
                 {item.serialNumber && <p className="text-sm text-gray-600"><span className="font-medium">Serial:</span> {item.serialNumber}</p>}
                 {!isWarehouse && <div className="flex items-center gap-2 text-sm text-gray-600 mt-2"><Anchor className="h-4 w-4" /><span>Deployed to: {item.location}</span></div>}
               </div>
-              <div className="flex flex-col items-end gap-3">
+              <div className="flex flex-col items-start sm:items-end gap-3 w-full sm:w-auto">
                 <Badge className={getStatusColorClass(item.status)}>
                   <div className="flex items-center gap-1">{getStatusIcon(item.status)}{item.status}</div>
                 </Badge>
@@ -255,14 +255,14 @@ export function EquipmentInventory({ equipment }: EquipmentInventoryProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold flex items-center gap-2"><Package className="h-8 w-8" /> Equipment Inventory</h2>
-          <p className="text-gray-600 mt-1">In-Out Management System</p>
+          <h2 className="text-2xl sm:text-3xl font-bold flex items-center gap-2"><Package className="h-6 w-6 sm:h-8 sm:w-8" /> Equipment Inventory</h2>
+          <p className="text-gray-600 mt-1 text-sm sm:text-base">In-Out Management System</p>
         </div>
-        <div className="flex items-center gap-4">
-          <Button onClick={handleExport} variant="outline"><Download className="h-4 w-4 mr-2" /> Export</Button>
-          {!isReadOnly && <Button onClick={() => handleOpenEdit()} className="bg-[#002147]"><Plus className="h-4 w-4 mr-2" /> Add Item</Button>}
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <Button onClick={handleExport} variant="outline" className="flex-1 sm:flex-none"><Download className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">Export</span></Button>
+          {!isReadOnly && <Button onClick={() => handleOpenEdit()} className="bg-[#002147] flex-1 sm:flex-none"><Plus className="h-4 w-4 mr-2" /> Add Item</Button>}
         </div>
       </div>
 
