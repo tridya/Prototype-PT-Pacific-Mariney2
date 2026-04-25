@@ -43,8 +43,17 @@ import {
   Building2,
   Download,
   Eye,
-  Trash2
+  Trash2,
+  MoreHorizontal
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Certificate, CertificateWithVessel, Vessel } from '@/types/maritime';
 import { calculateCertificateHealth, getHealthBadgeColorClass } from '@/lib/certificate-utils';
 import * as XLSX from 'xlsx';
@@ -335,38 +344,62 @@ export function CertificateManagement({
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex flex-wrap items-center justify-end gap-1 sm:gap-2">
-                          <Button variant="outline" size="icon" className="h-8 w-8 sm:w-auto sm:h-9 sm:px-3" onClick={() => handleDownloadCert(cert)} title="Download Attachment">
+                        {/* Desktop Actions */}
+                        <div className="hidden sm:flex items-center justify-end gap-2">
+                          <Button variant="outline" size="sm" onClick={() => handleDownloadCert(cert)} title="Download Attachment">
                             <Download className="h-4 w-4" />
                           </Button>
-                          <Button variant="outline" size="icon" className="h-8 w-8 sm:w-auto sm:h-9 sm:px-3" onClick={() => handlePreview(cert)} title="Preview Document">
+                          <Button variant="outline" size="sm" onClick={() => handlePreview(cert)} title="Preview Document">
                             <Eye className="h-4 w-4" />
                           </Button>
                           {!isReadOnly && (
                             <>
-                              <Button
-                                variant="outline"
-                                size="icon" className="h-8 w-8 sm:w-auto sm:h-9 sm:px-3"
-                                onClick={() => handleOpenModal(cert)}
-                              >
+                              <Button variant="outline" size="sm" onClick={() => handleOpenModal(cert)}>
                                 <Edit className="h-4 w-4" />
                               </Button>
-                              <Button
-                                variant="outline"
-                                size="icon" className="h-8 w-8 sm:w-auto sm:h-9 sm:px-3"
-                                onClick={() => handleCopy(cert)}
-                              >
+                              <Button variant="outline" size="sm" onClick={() => handleCopy(cert)}>
                                 <Copy className="h-4 w-4" />
                               </Button>
-                              <Button
-                                variant="outline"
-                                size="icon" className="h-8 w-8 sm:w-auto sm:h-9 sm:px-3 text-red-500 hover:text-red-700 hover:bg-red-50"
-                                onClick={() => handleDelete(cert)}
-                              >
+                              <Button variant="outline" size="sm" onClick={() => handleDelete(cert)} className="text-red-500 hover:text-red-700 hover:bg-red-50">
                                 <Trash2 className="h-4 w-4" />
                               </Button>
                             </>
                           )}
+                        </div>
+
+                        {/* Mobile Actions (Three Dots Dropdown) */}
+                        <div className="flex sm:hidden justify-end">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                              <DropdownMenuItem onClick={() => handleDownloadCert(cert)}>
+                                <Download className="h-4 w-4 mr-2" /> Download
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handlePreview(cert)}>
+                                <Eye className="h-4 w-4 mr-2" /> Preview
+                              </DropdownMenuItem>
+                              {!isReadOnly && (
+                                <>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem onClick={() => handleOpenModal(cert)}>
+                                    <Edit className="h-4 w-4 mr-2" /> Edit
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleCopy(cert)}>
+                                    <Copy className="h-4 w-4 mr-2" /> Copy
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleDelete(cert)} className="text-red-600 focus:text-red-600 focus:bg-red-50">
+                                    <Trash2 className="h-4 w-4 mr-2" /> Delete
+                                  </DropdownMenuItem>
+                                </>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </div>
                       </TableCell>
                     </TableRow>
